@@ -3,13 +3,17 @@ package studio.papercube.ungadisplay.app
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Parent
-import javafx.scene.control.Alert
 import javafx.scene.control.Button
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import studio.papercube.ungadisplay.model.GeneralAssemblyDisplay
 import studio.papercube.ungadisplay.model.ModeratedCaucus
-import studio.papercube.ungadisplay.view.*
+import studio.papercube.ungadisplay.model.SpeakerListStateToggleRequest
+import studio.papercube.ungadisplay.view.DataInputDialog
+import studio.papercube.ungadisplay.view.KeyPressEventHandler
+import studio.papercube.ungadisplay.view.childrenHgrow
+import studio.papercube.ungadisplay.view.childrenUseMaxWidth
 import tornadofx.*
 import tornadofx.ValidationTrigger.None
 
@@ -47,48 +51,25 @@ class ConsoleView(
                 menubutton("动议磋商") {
                     item("有主持核心磋商") {
                         action {
-                            val model = ViewModel()
-                            val properties = Array(4) { model.bindSimpleStringProperty() }
-
-                            dialog("新建${this@item.text}") {
-                                val validationContext = ValidationContext()
-                                val keyPressEventHandler = KeyPressEventHandler(this)
-                                bindStringPropertiesToLabeledTextFields(properties,
-                                        "代表团", "主题", "总时间", "单位时间") {
-                                    validationContext.addValidator(this, textProperty(), None) { str: String? ->
+                            val dataInputDialog = DataInputDialog(ModeratedCaucus(), this@ConsoleView)
+                            dataInputDialog
+                                    .bind("代表团", ModeratedCaucus::representativeGroup)
+                                    .bind("主题", ModeratedCaucus::topic)
+                                    .bind("总时间", ModeratedCaucus::totalTime)
+                                    .bind("单位时间", ModeratedCaucus::unitTime)
+                                    .bindCheckbox("通过", ModeratedCaucus::accepted)
+                                    .validate { moderatedCaucus ->
                                         when {
-                                            str == null || str.isBlank() -> error("不可为空")
+                                            moderatedCaucus.unitTime > moderatedCaucus.totalTime -> "时间无效"
                                             else -> null
                                         }
                                     }
-                                    requiredWhenFired()
-                                }
-                                val checkboxAccepted = checkbox("通过") {
-                                    isSelected = true
-                                }
-                                buttonbar {
-                                    button("完成") {
-                                        keyPressEventHandler.registerEvent(this, "Enter")
-                                        action {
-                                            if (validationContext.validate()) {
-                                                try {
-                                                    displayInterface.newModeratedCaucus(ModeratedCaucus(
-                                                            properties[0].value,
-                                                            properties[1].value,
-                                                            properties[2].value.toLong(),
-                                                            properties[3].value.toLong(),
-                                                            checkboxAccepted.isSelected
-                                                    ))
-                                                    close()
-                                                } catch (e: Exception) {
-                                                    alert(Alert.AlertType.ERROR, "值无效")
-                                                }
-                                            }
+                                    .dialog("新建有主持核心磋商") {
+                                        dataInputDialog.onComplete { m ->
+                                            displayInterface.newModeratedCaucus(m)
+                                            return@onComplete DataInputDialog.ActionResult.CLOSE_DIALOG
                                         }
                                     }
-                                }
-                            }
-
                         }
                     }
                 }
@@ -97,12 +78,12 @@ class ConsoleView(
                 menubutton("主发言名单") {
                     item("开启") {
                         action {
-                            displayInterface.isSpeakerListOn = true
+                            toggleSpeakerListState(true)
                         }
                     }
                     item("关闭") {
                         action {
-                            displayInterface.isSpeakerListOn = false
+                            toggleSpeakerListState(false)
                         }
                     }
                 }
@@ -186,7 +167,9 @@ class ConsoleView(
         }
     }
 
-    init {
+    private fun toggleSpeakerListState(on: Boolean) {
+        val dialog = DataInputDialog(SpeakerListStateToggleRequest(), this)
+//                .bind
     }
 
     override val root: Parent

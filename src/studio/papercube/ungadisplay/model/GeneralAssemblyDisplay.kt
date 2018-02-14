@@ -1,10 +1,10 @@
-package studio.papercube.ungadisplay.app
+package studio.papercube.ungadisplay.model
 
 import studio.papercube.ungadisplay.model.ModeratedCaucus
 
 interface GeneralAssemblyDisplay {
     fun newModeratedCaucus(moderatedCaucus: ModeratedCaucus)
-    var isSpeakerListOn: Boolean
+    fun toggleSpeakerListState()
     fun newFreeDebate()
     fun newModeratedDebate()
     fun newDebateClosure()

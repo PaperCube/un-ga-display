@@ -10,6 +10,7 @@ import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.scene.text.TextAlignment
+import studio.papercube.ungadisplay.model.GeneralAssemblyDisplay
 import studio.papercube.ungadisplay.model.ModeratedCaucus
 import studio.papercube.ungadisplay.view.FxBackgrounds
 import studio.papercube.ungadisplay.view.FxColors
@@ -112,29 +113,28 @@ class DisplayScene : Scene(DisplayPane()), GeneralAssemblyDisplay {
         }
     }
 
-    override var isSpeakerListOn: Boolean
-        get() {
-            loggingArea.appendln("${Thread.currentThread().stackTrace[1]}: Unsupported")
-            return false
-        }
-        set(value) {
-            loggingArea.appendln("${Thread.currentThread().stackTrace[1]}: Unsupported")
-        }
+    override fun toggleSpeakerListState() {
+        unimplemented()
+    }
 
     override fun newFreeDebate() {
-        loggingArea.appendln("${Thread.currentThread().stackTrace[1]}: Unsupported")
+        unimplemented()
     }
 
     override fun newModeratedDebate() {
-        loggingArea.appendln("${Thread.currentThread().stackTrace[1]}: Unsupported")
+        unimplemented()
     }
 
     override fun newDebateClosure() {
-        loggingArea.appendln("${Thread.currentThread().stackTrace[1]}: Unsupported")
+        unimplemented()
     }
 
     override fun newMeetingSuspension() {
-        loggingArea.appendln("${Thread.currentThread().stackTrace[1]}: Unsupported")
+        unimplemented()
+    }
+
+    private fun unimplemented() {
+        unimplemented()
     }
 
     override fun pushMessage(string: String) {
