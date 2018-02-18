@@ -8,6 +8,7 @@ import javafx.scene.text.Text
 import studio.papercube.ungadisplay.view.DataInputDialog.Messages.MESSAGE_CANNOT_BE_EMPTY
 import studio.papercube.ungadisplay.view.DataInputDialog.Messages.MESSAGE_NUMBER_ONLY
 import tornadofx.*
+import tornadofx.FX.Companion.messages
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.jvm.jvmName
@@ -71,11 +72,11 @@ open class DataInputDialog<T : Any>(private val obj: T, private val uiComponent:
         dialogLevelDataValidator = validator
     }
 
-    fun onComplete(action: (T) -> ActionResult) {
+    fun onComplete(action: (T) -> ActionResult) = apply{
         actionOnComplete = action
     }
 
-    fun dialog(title: String = "", op: StageAwareFieldset.() -> Unit) {
+    fun dialog(title: String = "", op: StageAwareFieldset.() -> Unit = {}) {
         uiComponent.dialog(title) {
             keyPressEventHandler = KeyPressEventHandler(this)
             val validationContext = ValidationContext()
@@ -84,6 +85,7 @@ open class DataInputDialog<T : Any>(private val obj: T, private val uiComponent:
                 field(desc) {
                     textfield {
                         property.node = this
+                        messages[""]
                         validationContext.addValidator(this) { str: String? ->
                             when {
                                 objClass == Long::class || objClass == Int::class ->

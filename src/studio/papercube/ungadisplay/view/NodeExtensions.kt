@@ -26,6 +26,14 @@ fun Pane.childrenHgrow(priority: Priority) {
     }
 }
 
+fun TextArea.appendEmptyLines(lineCnt: Int) = apply {
+    for (i in 1..lineCnt) {
+        appendln("")
+    }
+}
+
+fun TextArea.separateMsgs() = appendEmptyLines(2)
+
 fun TextArea.appendln(string: String) = apply {
     appendText(string)
     appendText("\r\n")
