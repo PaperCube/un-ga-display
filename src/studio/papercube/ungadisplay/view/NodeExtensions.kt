@@ -32,6 +32,11 @@ fun TextArea.appendEmptyLines(lineCnt: Int) = apply {
     }
 }
 
+/**
+ * Print 2 empty lines
+ *
+ * @receiver the [TextArea] on which lines are printed.
+ */
 fun TextArea.separateMsgs() = appendEmptyLines(2)
 
 fun TextArea.appendln(string: String) = apply {
