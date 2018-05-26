@@ -1,14 +1,12 @@
 package studio.papercube.ungadisplay.model
 
-import studio.papercube.ungadisplay.model.ModeratedCaucus
-
 interface GeneralAssemblyDisplay {
     fun newModeratedCaucus(moderatedCaucus: ModeratedCaucus)
-    fun toggleSpeakerListState()
-    fun newFreeDebate()
-    fun newModeratedDebate()
-    fun newDebateClosure()
-    fun newMeetingSuspension()
+    fun toggleSpeakerListState(on:Boolean, singleRepresentativeRequest: SingleRepresentativeRequest)
+    fun newFreeDebate(timedRequest: TimedRequest)
+    fun newModeratedDebate(moderatedRequest: ModeratedRequest)
+    fun newDebateClosure(singleRepresentativeRequest: SingleRepresentativeRequest)
+    fun newMeetingSuspension(singleRepresentativeRequest: SingleRepresentativeRequest)
     fun pushMessage(string: String)
     fun clearLog()
 }

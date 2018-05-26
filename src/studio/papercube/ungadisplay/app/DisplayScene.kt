@@ -10,15 +10,12 @@ import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.scene.text.TextAlignment
-import studio.papercube.ungadisplay.model.GeneralAssemblyDisplay
-import studio.papercube.ungadisplay.model.ModeratedCaucus
-import studio.papercube.ungadisplay.view.FxBackgrounds
-import studio.papercube.ungadisplay.view.FxColors
-import studio.papercube.ungadisplay.view.FxFonts
+import studio.papercube.ungadisplay.model.*
+import studio.papercube.ungadisplay.view.*
 import studio.papercube.ungadisplay.view.FxFonts.asFont
-import studio.papercube.ungadisplay.view.appendln
 
-class DisplayScene : Scene(DisplayPane()), GeneralAssemblyDisplay {
+class DisplayScene(displayApplication: DisplayApplication) :
+        Scene(DisplayPane()), GeneralAssemblyDisplay {
     val displayPane: DisplayPane = root as DisplayPane
 
     val defaultInsets = Insets(20.0)
@@ -113,28 +110,34 @@ class DisplayScene : Scene(DisplayPane()), GeneralAssemblyDisplay {
         }
     }
 
-    override fun toggleSpeakerListState() {
+    override fun toggleSpeakerListState(on: Boolean, singleRepresentativeRequest: SingleRepresentativeRequest) {
+        with(singleRepresentativeRequest) {
+            loggingArea.appendln("$from 动议${if(on){"开启"}else{"关闭"}}主发言名单")
+            if (accepted) loggingArea.appendln("此动议通过")
+            else loggingArea.appendln("此动议未获通过")
+        }
+    }
+
+    override fun newFreeDebate(timedRequest: TimedRequest) {
         unimplemented()
     }
 
-    override fun newFreeDebate() {
+    override fun newModeratedDebate(moderatedRequest: ModeratedRequest) {
         unimplemented()
     }
 
-    override fun newModeratedDebate() {
-        unimplemented()
+    override fun newDebateClosure(singleRepresentativeRequest: SingleRepresentativeRequest) {
+        loggingArea.separateMsgs()
+                .appendln("")
+
     }
 
-    override fun newDebateClosure() {
-        unimplemented()
-    }
-
-    override fun newMeetingSuspension() {
+    override fun newMeetingSuspension(singleRepresentativeRequest: SingleRepresentativeRequest) {
         unimplemented()
     }
 
     private fun unimplemented() {
-        unimplemented()
+        loggingArea.appendln(Thread.currentThread().stackTrace[2].toString() + ": Unsupported")
     }
 
     override fun pushMessage(string: String) {

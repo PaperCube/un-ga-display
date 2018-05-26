@@ -6,16 +6,12 @@ import tornadofx.App
 class DisplayApplication : App() {
     override fun start(stage: Stage) {
         stage.isMaximized = true
-//        primaryStage.isResizable = false
-//        primaryStage.isIconified = true
-//        primaryStage.minHeight = 720.0
-//        primaryStage.minWidth = 1280.0
-        val displayScene = DisplayScene()
+        val displayScene = DisplayScene(this)
         stage.scene = displayScene
         stage.show()
 
         val secondaryStage = Stage()
-        val consoleView = ConsoleView(displayScene)
+        val consoleView = ConsoleView(this, displayScene)
         secondaryStage.setOnCloseRequest {
             stage.close()
         }

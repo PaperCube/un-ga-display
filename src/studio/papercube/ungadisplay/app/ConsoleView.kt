@@ -9,15 +9,15 @@ import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import studio.papercube.ungadisplay.model.GeneralAssemblyDisplay
 import studio.papercube.ungadisplay.model.ModeratedCaucus
-import studio.papercube.ungadisplay.model.SpeakerListStateToggleRequest
-import studio.papercube.ungadisplay.view.DataInputDialog
-import studio.papercube.ungadisplay.view.KeyPressEventHandler
-import studio.papercube.ungadisplay.view.childrenHgrow
-import studio.papercube.ungadisplay.view.childrenUseMaxWidth
+import studio.papercube.ungadisplay.model.SingleRepresentativeRequest
+import studio.papercube.ungadisplay.view.*
+import studio.papercube.ungadisplay.view.DataInputDialog.ActionResult
+import studio.papercube.ungadisplay.view.DataInputDialog.ActionResult.*
 import tornadofx.*
 import tornadofx.ValidationTrigger.None
 
 class ConsoleView(
+        private val application: DisplayApplication,
         private val displayInterface: GeneralAssemblyDisplay
 ) : View() {
     private lateinit var buttonPush: Button
@@ -64,12 +64,11 @@ class ConsoleView(
                                             else -> null
                                         }
                                     }
-                                    .dialog("新建有主持核心磋商") {
-                                        dataInputDialog.onComplete { m ->
-                                            displayInterface.newModeratedCaucus(m)
-                                            return@onComplete DataInputDialog.ActionResult.CLOSE_DIALOG
-                                        }
+                                    .onComplete { m ->
+                                        displayInterface.newModeratedCaucus(m)
+                                        CLOSE_DIALOG
                                     }
+                                    .dialog("新建有主持核心磋商")
                         }
                     }
                 }
@@ -91,24 +90,35 @@ class ConsoleView(
                 menubutton("动议辩论") {
                     item("自由辩论") {
                         action {
-                            displayInterface.newFreeDebate()
+                            QuickInputDialogs.generateTimedRequestDialog(this@ConsoleView)
+                                    .onComplete { obj ->
+                                        displayInterface.newFreeDebate(obj)
+                                        CLOSE_DIALOG
+                                    }
+                                    .dialog("新建自由辩论")
+
                         }
                     }
                     item("有主题辩论") {
                         action {
-                            displayInterface.newModeratedDebate()
+                            QuickInputDialogs.generateModeratedRequestDialog(this@ConsoleView)
+                                    .onComplete { obj->
+                                        displayInterface.newModeratedDebate(obj)
+                                        CLOSE_DIALOG
+                                    }
+                                    .dialog("新建有主题辩论")
                         }
                     }
                     item("结束辩论") {
                         action {
-                            displayInterface.newDebateClosure()
+                            displayInterface.newDebateClosure(SingleRepresentativeRequest())
                         }
                     }
                 }
 
                 button("动议休会") {
                     action {
-                        displayInterface.newDebateClosure()
+//                        QuickInputDialogs.
                     }
                 }
 
@@ -168,8 +178,15 @@ class ConsoleView(
     }
 
     private fun toggleSpeakerListState(on: Boolean) {
-        val dialog = DataInputDialog(SpeakerListStateToggleRequest(), this)
-//                .bind
+        val textRequestedState = if (on) "开启" else "关闭"
+        val dialog = DataInputDialog(SingleRepresentativeRequest(), this)
+        dialog.bind("主席团", SingleRepresentativeRequest::from)
+                .bindCheckbox("通过", SingleRepresentativeRequest::accepted)
+                .onComplete { m ->
+                    displayInterface.toggleSpeakerListState(on, m)
+                    CLOSE_DIALOG
+                }
+                .dialog(textRequestedState + "主发言名单")
     }
 
     override val root: Parent
